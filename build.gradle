@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'application'
+    id "io.freefair.lombok" version "4.1.6"
+    id "com.diffplug.gradle.spotless" version "3.27.1"
 }
 
 repositories {
@@ -9,13 +11,27 @@ repositories {
 
 application {
     mainClassName = 'com.marqusm.example.moneytransaction.App'
+    applicationDefaultJvmArgs = ['--add-opens', 'java.base/java.lang=ALL-UNNAMED']
 }
 
 test {
     useJUnitPlatform()
 }
 
+spotless {
+    java {
+        googleJavaFormat()
+    }
+}
+
 dependencies {
+    implementation 'com.sparkjava:spark-core:2.9.1'
+    implementation 'com.google.inject:guice:4.2.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+    implementation 'io.rest-assured:rest-assured:4.2.0'
+    testImplementation 'com.sparkjava:spark-core:2.9.1'
 }
