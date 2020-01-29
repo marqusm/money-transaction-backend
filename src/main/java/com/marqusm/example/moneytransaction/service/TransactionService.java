@@ -1,6 +1,7 @@
 package com.marqusm.example.moneytransaction.service;
 
 import com.google.inject.Inject;
+import com.marqusm.example.moneytransaction.exception.BadRequestException;
 import com.marqusm.example.moneytransaction.model.Transaction;
 import com.marqusm.example.moneytransaction.repository.AccountRepository;
 import com.marqusm.example.moneytransaction.repository.TransactionRepository;
@@ -11,12 +12,14 @@ import java.util.Comparator;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 /**
  * @author : Marko
  * @createdOn : 25-Jan-20
  */
+@Slf4j
 @AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public class TransactionService {
 
@@ -33,8 +36,8 @@ public class TransactionService {
     newTransaction.setMetaActive(Boolean.TRUE);
 
     val ids = new ArrayList<UUID>(2);
-    ids.add(transaction.getAccountId());
-    ids.add(transaction.getRelatedAccountId());
+    ids.add(accountRepository.getById(transaction.getAccountId()).getId());
+    ids.add(accountRepository.getById(transaction.getRelatedAccountId()).getId());
     ids.sort(Comparator.naturalOrder());
 
     synchronized (ids.get(0)) {
@@ -44,16 +47,14 @@ public class TransactionService {
 
         if (primaryAccount.getAmount().add(transaction.getAmount()).compareTo(BigDecimal.ZERO)
             < 0) {
-          throw new IllegalArgumentException(
-              "Transaction would make negative balance: " + transaction);
+          throw new BadRequestException("Transaction would make negative balance: " + transaction);
         }
         if (secondaryAccount
                 .getAmount()
                 .subtract(transaction.getAmount())
                 .compareTo(BigDecimal.ZERO)
             < 0) {
-          throw new IllegalArgumentException(
-              "Transaction would make negative balance: " + transaction);
+          throw new BadRequestException("Transaction would make negative balance: " + transaction);
         }
 
         primaryAccount.addAmount(transaction.getAmount());

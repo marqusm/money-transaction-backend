@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.marqusm.example.moneytransaction.model.Account;
 import com.marqusm.example.moneytransaction.repository.AccountRepository;
 import com.marqusm.example.moneytransaction.util.RepositoryUtil;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +21,11 @@ public class AccountService {
   private final AccountRepository accountRepository;
 
   public Account createAccount() {
-    val account = new Account();
+    val account =
+        new Account(
+            UUID.randomUUID(),
+            BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP).add(BigDecimal.valueOf(1_000_000)));
+    account.setMetaActive(Boolean.TRUE);
     return accountRepository.save(account);
   }
 

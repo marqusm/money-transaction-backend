@@ -9,6 +9,7 @@ class AppTest {
   @Test
   void appStartupTest() {
     App.main(new String[0]);
+    awaitInitialization();
     Assertions.assertTrue(activeThreadCount() > 0);
     stop();
     awaitStop();

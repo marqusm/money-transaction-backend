@@ -2,13 +2,11 @@ package com.marqusm.example.moneytransaction.controller;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
-import static spark.Spark.*;
 
-import com.google.inject.Guice;
 import com.marqusm.example.moneytransaction.TestData;
-import com.marqusm.example.moneytransaction.configuration.ApiConfig;
-import com.marqusm.example.moneytransaction.configuration.DefaultModule;
+import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
 import com.marqusm.example.moneytransaction.model.Account;
+import io.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
@@ -20,27 +18,22 @@ import org.junit.jupiter.api.Test;
  * @createdOn : 26-Jan-20
  */
 @Slf4j
-class AccountControllerTest {
+class AccountControllerITest extends ControllerITest {
 
   @BeforeAll
   static void setUp() {
-    log.info("Test class setup");
-    val injector = Guice.createInjector(new DefaultModule());
-    val apiConfig = injector.getInstance(ApiConfig.class);
-    apiConfig.establishApi();
-    awaitInitialization();
+    createInjectorAndInitServer();
   }
 
   @AfterAll
   static void cleanUp() {
-    log.info("Test class cleanup");
-    stop();
-    awaitStop();
+    stopServer();
   }
 
   @Test
   void create() {
     given()
+        .contentType(ContentType.JSON.toString())
         .body(new Account(null, null))
         .post(TestData.API_PREFIX + "/accounts")
         .andReturn()
@@ -54,6 +47,7 @@ class AccountControllerTest {
   void read() {
     val accountId =
         given()
+            .contentType(ContentType.JSON.toString())
             .body(new Account(null, null))
             .post(TestData.API_PREFIX + "/accounts")
             .andReturn()
@@ -73,6 +67,7 @@ class AccountControllerTest {
   void delete() {
     val accountId =
         given()
+            .contentType(ContentType.JSON.toString())
             .body(new Account(null, null))
             .post(TestData.API_PREFIX + "/accounts")
             .andReturn()

@@ -10,9 +10,9 @@ import com.marqusm.example.moneytransaction.constant.HttpHeaderName;
 import com.marqusm.example.moneytransaction.controller.AccountController;
 import com.marqusm.example.moneytransaction.controller.TransactionController;
 import com.marqusm.example.moneytransaction.exception.base.ClientHttpException;
+import com.marqusm.example.moneytransaction.filter.ContentTypeFilter;
 import com.marqusm.example.moneytransaction.model.ErrorResponse;
 import com.marqusm.example.moneytransaction.util.HttpRequestUtils;
-import io.restassured.http.ContentType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +31,7 @@ public class ApiConfig {
   private final TransactionController transactionController;
   private final ResponseTransformer responseTransformer;
   private final Gson gson;
+  private final ContentTypeFilter contentTypeFilter;
 
   private static int requestId = 1;
 
@@ -38,22 +39,25 @@ public class ApiConfig {
     path(
         ApiPath.API_PREFIX,
         () -> {
-          exception(
-              ClientHttpException.class,
-              (exception, request, response) -> {
-                log.error(HttpRequestUtils.toPrettyExceptionString(request, response), exception);
-                response.status(exception.getStatusCode());
-                response.body(gson.toJson(new ErrorResponse(exception.getMessage())));
-              });
           before(
               "/*",
               (request, response) -> {
                 val currRequestId = requestId++ + "";
                 log.info(HttpRequestUtils.toPrettyString(request, currRequestId));
-                response.type(ContentType.JSON.toString());
                 response.header(HttpHeaderName.X_Request_ID, currRequestId);
+                contentTypeFilter.apply(request);
+                response.type(ContentTypeName.APPLICATION_JSON);
               });
-          after("/*", (request, response) -> log.info(HttpRequestUtils.toPrettyString(response)));
+          afterAfter(
+              "/*", (request, response) -> log.info(HttpRequestUtils.toPrettyString(response)));
+          exception(
+              ClientHttpException.class,
+              (exception, request, response) -> {
+                log.error(HttpRequestUtils.toPrettyExceptionString(request, response), exception);
+                response.status(exception.getStatusCode());
+                response.type(ContentTypeName.APPLICATION_JSON);
+                response.body(gson.toJson(new ErrorResponse(exception.getMessage())));
+              });
           path(
               ApiPath.ACCOUNTS,
               () -> {

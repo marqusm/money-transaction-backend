@@ -6,8 +6,8 @@ import com.marqusm.example.moneytransaction.exception.base.ClientHttpException;
  * @author : Marko
  * @createdOn : 28-Jan-20
  */
-public class ConflictException extends ClientHttpException {
-  public ConflictException(String message) {
-    super(409, message, null);
+public class BadRequestException extends ClientHttpException {
+  public BadRequestException(String message) {
+    super(400, message, null);
   }
 }

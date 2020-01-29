@@ -30,3 +30,4 @@ build
 
 # Ignore IntelliJ files
 .idea/
+/.idea/
