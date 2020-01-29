@@ -3,6 +3,7 @@ package com.marqusm.example.moneytransaction.configuration;
 import static spark.Spark.*;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.inject.Inject;
 import com.marqusm.example.moneytransaction.constant.ApiPath;
 import com.marqusm.example.moneytransaction.constant.ContentTypeName;
@@ -57,6 +58,14 @@ public class ApiConfig {
                 response.status(exception.getStatusCode());
                 response.type(ContentTypeName.APPLICATION_JSON);
                 response.body(gson.toJson(new ErrorResponse(exception.getMessage())));
+              });
+          exception(
+              JsonSyntaxException.class,
+              (exception, request, response) -> {
+                log.error(HttpRequestUtils.toPrettyExceptionString(request, response), exception);
+                response.status(400);
+                response.type(ContentTypeName.APPLICATION_JSON);
+                response.body(gson.toJson(new ErrorResponse("Illegal body data.")));
               });
           path(
               ApiPath.ACCOUNTS,

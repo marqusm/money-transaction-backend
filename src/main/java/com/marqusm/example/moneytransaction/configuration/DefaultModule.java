@@ -1,6 +1,7 @@
 package com.marqusm.example.moneytransaction.configuration;
 
-import com.google.inject.AbstractModule;
+import com.google.inject.Binder;
+import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.marqusm.example.moneytransaction.controller.AccountController;
 import com.marqusm.example.moneytransaction.controller.TransactionController;
@@ -17,16 +18,15 @@ import spark.ResponseTransformer;
  * @createdOn : 25-Jan-20
  */
 @NoArgsConstructor
-public class DefaultModule extends AbstractModule {
-  @Override
-  protected void configure() {
-    bind(ResponseTransformer.class).to(JsonGsonTransformer.class);
+public class DefaultModule implements Module {
+  public void configure(Binder binder) {
+    binder.bind(ResponseTransformer.class).to(JsonGsonTransformer.class);
 
-    bind(AccountRepository.class).in(Singleton.class);
-    bind(TransactionRepository.class).in(Singleton.class);
-    bind(AccountService.class).in(Singleton.class);
-    bind(TransactionService.class).in(Singleton.class);
-    bind(AccountController.class).in(Singleton.class);
-    bind(TransactionController.class).in(Singleton.class);
+    binder.bind(AccountRepository.class).in(Singleton.class);
+    binder.bind(TransactionRepository.class).in(Singleton.class);
+    binder.bind(AccountService.class).in(Singleton.class);
+    binder.bind(TransactionService.class).in(Singleton.class);
+    binder.bind(AccountController.class).in(Singleton.class);
+    binder.bind(TransactionController.class).in(Singleton.class);
   }
 }

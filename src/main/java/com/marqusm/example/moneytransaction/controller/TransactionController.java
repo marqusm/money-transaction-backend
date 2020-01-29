@@ -17,8 +17,8 @@ import spark.Route;
 @AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public class TransactionController {
 
-  private final TransactionService transactionService;
   private final Gson gson;
+  private final TransactionService transactionService;
 
   public Route create() {
     return (request, response) -> {

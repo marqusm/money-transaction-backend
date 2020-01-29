@@ -7,6 +7,7 @@ import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
 import com.marqusm.example.moneytransaction.model.Account;
 import io.restassured.http.ContentType;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
@@ -41,6 +42,16 @@ class AccountControllerITest extends ControllerITest {
         .then()
         .statusCode(200)
         .body("id", notNullValue(), "amount", equalTo(0f));
+  }
+
+  @Test
+  void read_nonExisting() {
+    given()
+        .get(TestData.API_PREFIX + "/accounts/" + UUID.randomUUID())
+        .andReturn()
+        .then()
+        .statusCode(404)
+        .body("message", not(emptyString()));
   }
 
   @Test

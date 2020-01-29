@@ -6,6 +6,7 @@ import com.marqusm.example.moneytransaction.repository.AccountRepository;
 import com.marqusm.example.moneytransaction.util.RepositoryUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,11 +21,13 @@ public class AccountService {
 
   private final AccountRepository accountRepository;
 
-  public Account createAccount() {
+  public Account createAccount(Account accountRequest) {
     val account =
         new Account(
             UUID.randomUUID(),
-            BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP).add(BigDecimal.valueOf(1_000_000)));
+            Optional.ofNullable(accountRequest.getAmount())
+                .orElse(BigDecimal.ZERO)
+                .setScale(2, RoundingMode.HALF_UP));
     account.setMetaActive(Boolean.TRUE);
     return accountRepository.save(account);
   }

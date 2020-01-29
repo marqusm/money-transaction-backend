@@ -27,7 +27,7 @@ public class IllegalRequestControllerITest extends ControllerITest {
   }
 
   @Test
-  void create() {
+  void illegalContentType() {
     given()
         .contentType(ContentType.TEXT)
         .body("Test body content")
@@ -35,6 +35,18 @@ public class IllegalRequestControllerITest extends ControllerITest {
         .andReturn()
         .then()
         .statusCode(406)
+        .body("message", not(emptyString()));
+  }
+
+  @Test
+  void illegalBody() {
+    given()
+        .contentType(ContentType.JSON)
+        .body("{")
+        .post(TestData.API_PREFIX + "/accounts")
+        .andReturn()
+        .then()
+        .statusCode(400)
         .body("message", not(emptyString()));
   }
 }

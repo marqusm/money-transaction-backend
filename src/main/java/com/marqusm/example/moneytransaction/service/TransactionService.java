@@ -20,11 +20,11 @@ import lombok.val;
  * @createdOn : 25-Jan-20
  */
 @Slf4j
-@AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
+@AllArgsConstructor(access = AccessLevel.PACKAGE, onConstructor = @__({@Inject}))
 public class TransactionService {
 
   private final TransactionRepository transactionRepository;
-  private final AccountRepository accountRepository;
+  protected final AccountRepository accountRepository;
 
   public Transaction createTransaction(Transaction transaction) {
     val newTransaction =
@@ -42,27 +42,27 @@ public class TransactionService {
 
     synchronized (ids.get(0)) {
       synchronized (ids.get(1)) {
-        val primaryAccount = accountRepository.getById(transaction.getAccountId());
-        val secondaryAccount = accountRepository.getById(transaction.getRelatedAccountId());
-
-        if (primaryAccount.getAmount().add(transaction.getAmount()).compareTo(BigDecimal.ZERO)
-            < 0) {
-          throw new BadRequestException("Transaction would make negative balance: " + transaction);
-        }
-        if (secondaryAccount
-                .getAmount()
-                .subtract(transaction.getAmount())
-                .compareTo(BigDecimal.ZERO)
-            < 0) {
-          throw new BadRequestException("Transaction would make negative balance: " + transaction);
-        }
-
-        primaryAccount.addAmount(transaction.getAmount());
-        secondaryAccount.subtractAmount(transaction.getAmount());
+        makeTransaction(transaction);
       }
     }
 
     return transactionRepository.save(newTransaction);
+  }
+
+  protected void makeTransaction(Transaction transaction) {
+    val primaryAccount = accountRepository.getById(transaction.getAccountId());
+    val secondaryAccount = accountRepository.getById(transaction.getRelatedAccountId());
+
+    if (primaryAccount.getAmount().add(transaction.getAmount()).compareTo(BigDecimal.ZERO) < 0) {
+      throw new BadRequestException("Transaction would make negative balance: " + transaction);
+    }
+    if (secondaryAccount.getAmount().subtract(transaction.getAmount()).compareTo(BigDecimal.ZERO)
+        < 0) {
+      throw new BadRequestException("Transaction would make negative balance: " + transaction);
+    }
+
+    primaryAccount.addAmount(transaction.getAmount());
+    secondaryAccount.subtractAmount(transaction.getAmount());
   }
 
   public Transaction getTransaction(UUID transactionId) {

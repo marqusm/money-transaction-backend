@@ -1,10 +1,13 @@
 package com.marqusm.example.moneytransaction.controller;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
+import com.marqusm.example.moneytransaction.model.Account;
 import com.marqusm.example.moneytransaction.service.AccountService;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.val;
 import spark.Route;
 
 /**
@@ -14,10 +17,14 @@ import spark.Route;
 @AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public class AccountController {
 
+  private final Gson gson;
   private final AccountService accountService;
 
   public Route create() {
-    return (request, response) -> accountService.createAccount();
+    return (request, response) -> {
+      val account = gson.fromJson(request.body(), Account.class);
+      return accountService.createAccount(account);
+    };
   }
 
   public Route read() {
