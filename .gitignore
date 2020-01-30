@@ -25,9 +25,5 @@ hs_err_pid*
 # Cache of project
 .gradletasknamecache
 
-# Ignore Gradle build output directory
-build
-
 # Ignore IntelliJ files
-.idea/
 /.idea/

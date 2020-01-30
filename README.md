@@ -29,6 +29,7 @@ Shadow plugin is responsible for creating a fat jar, so we can run a service wit
 The project can be built (assuming you are in project's root folder) using command
 `./gradlew clean build` and run using the command
 `java --add-opens=java.base/java.lang=ALL-UNNAMED -jar build/libs/money-transaction-backend-all.jar`.
+Can be started using Gradle application plugin, as well - `./gradlew run` 
 VM parameter has to be specified since Java Spark and Java 11 are not in good relations so far.
 Looks like the fix will come in the recent future, but as of now, it is necessary.
 
