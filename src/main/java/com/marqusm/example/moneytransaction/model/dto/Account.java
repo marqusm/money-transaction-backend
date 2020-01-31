@@ -1,6 +1,5 @@
-package com.marqusm.example.moneytransaction.model;
+package com.marqusm.example.moneytransaction.model.dto;
 
-import com.marqusm.example.moneytransaction.model.base.AbstractModel;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -13,16 +12,16 @@ import lombok.EqualsAndHashCode;
  */
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class Account extends AbstractModel {
+@EqualsAndHashCode
+public class Account {
   private final UUID id;
-  private BigDecimal amount;
+  private BigDecimal balance;
 
   public void addAmount(BigDecimal amount) {
-    this.amount = this.amount.add(amount);
+    this.balance = this.balance.add(amount);
   }
 
   public void subtractAmount(BigDecimal amount) {
-    this.amount = this.amount.subtract(amount);
+    this.balance = this.balance.subtract(amount);
   }
 }

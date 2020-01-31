@@ -12,8 +12,9 @@ import com.marqusm.example.moneytransaction.controller.AccountController;
 import com.marqusm.example.moneytransaction.controller.TransactionController;
 import com.marqusm.example.moneytransaction.exception.base.ClientHttpException;
 import com.marqusm.example.moneytransaction.filter.ContentTypeFilter;
-import com.marqusm.example.moneytransaction.model.ErrorResponse;
+import com.marqusm.example.moneytransaction.model.dto.ErrorResponse;
 import com.marqusm.example.moneytransaction.util.HttpRequestUtils;
+import java.util.NoSuchElementException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,14 @@ public class ApiConfig {
                 response.status(400);
                 response.type(ContentTypeName.APPLICATION_JSON);
                 response.body(gson.toJson(new ErrorResponse("Illegal body data.")));
+              });
+          exception(
+              NoSuchElementException.class,
+              (exception, request, response) -> {
+                log.error(HttpRequestUtils.toPrettyExceptionString(request, response), exception);
+                response.status(404);
+                response.type(ContentTypeName.APPLICATION_JSON);
+                response.body(gson.toJson(new ErrorResponse("Resource not found. ")));
               });
           path(
               ApiPath.ACCOUNTS,

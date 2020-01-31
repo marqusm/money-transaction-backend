@@ -1,4 +1,4 @@
-package com.marqusm.example.moneytransaction.model;
+package com.marqusm.example.moneytransaction.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;

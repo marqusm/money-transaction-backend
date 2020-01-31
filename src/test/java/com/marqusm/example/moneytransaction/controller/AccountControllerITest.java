@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
-import com.marqusm.example.moneytransaction.model.Account;
+import com.marqusm.example.moneytransaction.model.dto.Account;
 import io.restassured.http.ContentType;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ class AccountControllerITest extends ControllerITest {
         .peek()
         .then()
         .statusCode(200)
-        .body("id", notNullValue(), "amount", equalTo(0f));
+        .body("id", notNullValue(), "balance", equalTo(0f));
   }
 
   @Test
@@ -71,7 +71,7 @@ class AccountControllerITest extends ControllerITest {
         .andReturn()
         .then()
         .statusCode(200)
-        .body("id", equalTo(accountId.toString()), "amount", equalTo(0f));
+        .body("id", equalTo(accountId.toString()), "balance", equalTo(0f));
   }
 
   @Test
@@ -91,7 +91,7 @@ class AccountControllerITest extends ControllerITest {
         .andReturn()
         .then()
         .statusCode(200)
-        .body("id", equalTo(accountId.toString()), "amount", equalTo(0f));
+        .body("id", equalTo(accountId.toString()), "balance", equalTo(0f));
 
     given()
         .delete(TestData.API_PREFIX + "/accounts/{accountId}", accountId)

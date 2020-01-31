@@ -2,7 +2,7 @@ package com.marqusm.example.moneytransaction.controller;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
-import com.marqusm.example.moneytransaction.model.Account;
+import com.marqusm.example.moneytransaction.model.dto.Account;
 import com.marqusm.example.moneytransaction.service.AccountService;
 import java.util.UUID;
 import lombok.AccessLevel;

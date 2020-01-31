@@ -1,7 +1,7 @@
 package com.marqusm.example.moneytransaction.service;
 
 import com.google.inject.Inject;
-import com.marqusm.example.moneytransaction.model.Transaction;
+import com.marqusm.example.moneytransaction.model.dto.Transaction;
 import com.marqusm.example.moneytransaction.repository.AccountRepository;
 import com.marqusm.example.moneytransaction.repository.TransactionRepository;
 import java.util.ArrayList;
@@ -22,13 +22,13 @@ public class SlowTransactionService extends TransactionService {
   }
 
   @SneakyThrows
-  @Override
-  protected void makeTransaction(Transaction transaction) {
+  //  @Override
+  protected void executeTransaction(Transaction transaction) {
     val ids = new ArrayList<UUID>(2);
     ids.add(accountRepository.getById(transaction.getAccountId()).getId());
     ids.add(accountRepository.getById(transaction.getRelatedAccountId()).getId());
     ids.sort(Comparator.naturalOrder());
     ids.get(1).wait(500);
-    super.makeTransaction(transaction);
+    //    super.executeTransaction(transaction);
   }
 }

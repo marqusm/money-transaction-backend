@@ -1,0 +1,14 @@
+version: '3'
+services:
+
+  postgres:
+    container_name: postgres-money-transactions
+    image: postgres:12.1
+    restart: on-failure
+    stop_signal: SIGINT
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_DB=money-transactions
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

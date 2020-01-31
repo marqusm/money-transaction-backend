@@ -1,13 +1,11 @@
-package com.marqusm.example.moneytransaction.controller;
+package com.marqusm.example.moneytransaction;
 
 import static io.restassured.RestAssured.given;
+import static spark.Spark.*;
 
-import com.google.inject.Module;
-import com.google.inject.util.Modules;
-import com.marqusm.example.moneytransaction.TestData;
+import com.google.inject.Guice;
+import com.marqusm.example.moneytransaction.configuration.ApiConfig;
 import com.marqusm.example.moneytransaction.configuration.DefaultModule;
-import com.marqusm.example.moneytransaction.configuration.TransactionConcurrencyModule;
-import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
 import com.marqusm.example.moneytransaction.model.dto.Account;
 import com.marqusm.example.moneytransaction.model.dto.Transaction;
 import io.restassured.http.ContentType;
@@ -20,44 +18,29 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 
 /**
  * @author : Marko
  * @createdOn : 29-Jan-20
  */
 @Slf4j
-class TransactionControllerCTest extends ControllerITest {
+public class PerformanceTest {
 
-  private static final int THREAD_COUNT = 2;
-  private static final int TRANSACTIONS_COUNT = 5;
+  private static final String URL_PREFIX = "http://localhost:4567/api/v1";
 
-  @Disabled
-  @Test
-  void createSlowTransactions() {
-    val totalTime =
-        createTransactions(
-            Modules.override(new DefaultModule()).with(new TransactionConcurrencyModule()));
-    log.info("Total time: " + totalTime);
-    Assertions.assertTrue(totalTime > 2400);
-  }
+  public static void main(String[] args) {
+    AtomicInteger REQUESTS_COUNT = new AtomicInteger(10);
+    val THREAD_COUNT = 2;
 
-  @Test
-  void createNormalTransactions() {
-    val totalTime = createTransactions(new DefaultModule());
-    log.info("Total time: " + totalTime);
-    Assertions.assertTrue(totalTime < 1000);
-  }
-
-  private long createTransactions(Module module) {
-    createInjectorAndInitServer(module);
+    val injector = Guice.createInjector(new DefaultModule());
+    val apiConfig = injector.getInstance(ApiConfig.class);
+    apiConfig.establishApi();
+    awaitInitialization();
 
     val accountA =
         given()
             .contentType(ContentType.JSON)
-            .body(new Account(null, BigDecimal.valueOf(1_000)))
+            .body("{}")
             .post(TestData.API_PREFIX + "/accounts")
             .andReturn()
             .as(Account.class);
@@ -69,9 +52,10 @@ class TransactionControllerCTest extends ControllerITest {
             .andReturn()
             .as(Account.class);
 
-    val remainingCount = new AtomicInteger(TRANSACTIONS_COUNT);
+    val startTime = LocalDateTime.now();
+    val remainingCount = new AtomicInteger(REQUESTS_COUNT.get());
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < THREAD_COUNT; i++) {
       executor.execute(
           () -> {
             while (remainingCount.get() > 0) {
@@ -86,11 +70,9 @@ class TransactionControllerCTest extends ControllerITest {
             }
           });
     }
-
-    val startTime = LocalDateTime.now();
     executor.shutdown();
     try {
-      if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+      if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
         executor.shutdownNow();
       }
     } catch (InterruptedException ex) {
@@ -98,13 +80,14 @@ class TransactionControllerCTest extends ControllerITest {
       executor.shutdownNow();
       Thread.currentThread().interrupt();
     }
-
     val totalTime =
         LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()
             - startTime.toInstant(ZoneOffset.UTC).toEpochMilli();
-
-    stopServer();
-
-    return totalTime;
+    stop();
+    awaitStop();
+    log.info(
+        "Requests ratio: "
+            + ((double) REQUESTS_COUNT.get() / ((double) totalTime / 1000))
+            + " req/s");
   }
 }

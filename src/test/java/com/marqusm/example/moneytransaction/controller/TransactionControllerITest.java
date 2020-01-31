@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.*;
 
 import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
-import com.marqusm.example.moneytransaction.model.Account;
-import com.marqusm.example.moneytransaction.model.Transaction;
+import com.marqusm.example.moneytransaction.model.dto.Account;
+import com.marqusm.example.moneytransaction.model.dto.Transaction;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -67,14 +67,14 @@ class TransactionControllerITest extends ControllerITest {
         .andReturn()
         .then()
         .statusCode(200)
-        .body("amount", equalTo(transactionAmount));
+        .body("balance", equalTo(transactionAmount));
 
     given()
         .get(TestData.API_PREFIX + "/accounts/" + accountA.getId())
         .andReturn()
         .then()
         .statusCode(200)
-        .body("amount", equalTo(accountA.getAmount().floatValue() - transactionAmount));
+        .body("balance", equalTo(accountA.getBalance().floatValue() - transactionAmount));
   }
 
   @Test

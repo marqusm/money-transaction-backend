@@ -1,9 +1,8 @@
 package com.marqusm.example.moneytransaction.service;
 
 import com.google.inject.Inject;
-import com.marqusm.example.moneytransaction.model.Account;
+import com.marqusm.example.moneytransaction.model.dto.Account;
 import com.marqusm.example.moneytransaction.repository.AccountRepository;
-import com.marqusm.example.moneytransaction.util.RepositoryUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
@@ -25,23 +24,18 @@ public class AccountService {
     val account =
         new Account(
             UUID.randomUUID(),
-            Optional.ofNullable(accountRequest.getAmount())
+            Optional.ofNullable(accountRequest.getBalance())
                 .orElse(BigDecimal.ZERO)
                 .setScale(2, RoundingMode.HALF_UP));
-    account.setMetaActive(Boolean.TRUE);
     return accountRepository.save(account);
   }
 
   public Account getAccount(UUID accountId) {
     val account = accountRepository.getById(accountId);
-    RepositoryUtil.checkIfExists(account, "Account not found: " + accountId);
     return account;
   }
 
   public void deleteAccount(UUID accountId) {
-    val account = accountRepository.getById(accountId);
-    RepositoryUtil.checkIfExists(account, "Account not found: " + accountId);
-    account.setMetaActive(Boolean.FALSE);
-    accountRepository.update(account);
+    accountRepository.inactivate(accountId);
   }
 }
