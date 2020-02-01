@@ -8,7 +8,6 @@ import com.marqusm.example.moneytransaction.common.repository.TransactionReposit
 import com.marqusm.example.moneytransaction.common.service.TransactionService;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.val;
 
 /**
  * @author : Marko
@@ -21,12 +20,6 @@ public class DefaultTransactionServiceImpl implements TransactionService {
   private final TransactionRepository transactionRepository;
 
   public Transaction createTransaction(Transaction transaction) {
-    val newTransaction =
-        new Transaction(
-            null,
-            transaction.getAccountId(),
-            transaction.getRelatedAccountId(),
-            transaction.getAmount());
     return transactionRepository.transferMoney(transaction);
   }
 

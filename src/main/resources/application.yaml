@@ -1,0 +1,8 @@
+moneyTransactionService:
+#  repositoryImplementation: IN_MEMORY
+  repositoryImplementation: JOOQ
+  restImplementation: SPARK
+  database:
+    url: jdbc:postgresql://localhost:5435/money-transactions
+    user: postgres
+    password: postgres

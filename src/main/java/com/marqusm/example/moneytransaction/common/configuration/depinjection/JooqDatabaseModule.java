@@ -20,7 +20,7 @@ import org.jooq.impl.DefaultConfiguration;
 
 /**
  * @author : Marko
- * @createdOn : 25-Jan-20
+ * @createdOn : 01-Feb-20
  */
 @NoArgsConstructor
 public class JooqDatabaseModule implements Module {

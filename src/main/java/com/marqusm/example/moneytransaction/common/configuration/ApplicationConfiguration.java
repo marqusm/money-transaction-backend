@@ -1,10 +1,13 @@
 package com.marqusm.example.moneytransaction.common.configuration;
 
-import com.marqusm.example.moneytransaction.common.constant.ApplicationMode;
-import java.util.Map;
+import com.marqusm.example.moneytransaction.common.constant.RepositoryImplementation;
+import com.marqusm.example.moneytransaction.common.constant.RestImplementation;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
-import lombok.val;
+import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  * @author : Marko
@@ -12,24 +15,46 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class ApplicationConfiguration {
 
-  private static final Map<String, String> environmentVariables;
-  private static final Map<String, String> localVariables;
-  @Getter private static final ApplicationMode applicationMode;
+  private static final YamlConfiguration localConfiguration;
 
-  static {
-    environmentVariables = System.getenv();
-    localVariables =
-        new Yaml().load(ApplicationConfiguration.class.getResourceAsStream("/application.yaml"));
-    applicationMode =
-        ApplicationMode.valueOf(getConfiguration("money-transaction-backend.application-mode"));
+  @Getter public static final RepositoryImplementation repositoryImplementation;
+  @Getter public static final RestImplementation restImplementation;
+
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Data
+  public static class YamlConfiguration {
+    private ServiceConfiguration moneyTransactionService;
   }
 
-  private static String getConfiguration(String name) {
-    val envValue = environmentVariables.get(name.toUpperCase().replaceAll("[-,.]", "_"));
-    if (envValue != null) {
-      return envValue;
-    }
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Data
+  public static class ServiceConfiguration {
+    private String repositoryImplementation;
+    private String restImplementation;
+    private DatabaseConfiguration database;
+  }
 
-    return localVariables.get(name);
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Data
+  public static class DatabaseConfiguration {
+    private String url;
+    private String user;
+    private String password;
+  }
+
+  static {
+    Yaml yaml = new Yaml(new Constructor(YamlConfiguration.class));
+    localConfiguration =
+        yaml.load(ApplicationConfiguration.class.getResourceAsStream("/application.yaml"));
+
+    repositoryImplementation =
+        RepositoryImplementation.valueOf(
+            localConfiguration.getMoneyTransactionService().getRepositoryImplementation());
+    restImplementation =
+        RestImplementation.valueOf(
+            localConfiguration.getMoneyTransactionService().getRestImplementation());
   }
 }

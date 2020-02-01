@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * @author : Marko
@@ -12,10 +11,9 @@ import lombok.EqualsAndHashCode;
  */
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode
 public class Transaction {
-  private final UUID id;
-  private final UUID accountId;
-  private final UUID relatedAccountId;
-  private final BigDecimal amount;
+  private UUID id;
+  private UUID accountId;
+  private UUID relatedAccountId;
+  private BigDecimal amount;
 }
