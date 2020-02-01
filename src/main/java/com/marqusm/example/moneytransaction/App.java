@@ -1,11 +1,27 @@
 package com.marqusm.example.moneytransaction;
 
-import com.marqusm.example.moneytransaction.spark.SparkJooqStartupRunner;
+import static spark.Spark.awaitInitialization;
+
+import com.google.inject.Guice;
+import com.marqusm.example.moneytransaction.common.configuration.depinjection.DefaultModule;
+import com.marqusm.example.moneytransaction.common.configuration.depinjection.JooqDatabaseModule;
+import com.marqusm.example.moneytransaction.common.configuration.depinjection.SparkApiModule;
+import com.marqusm.example.moneytransaction.libimpl.spark.configuration.ApiConfig;
 import java.io.IOException;
+import java.util.Properties;
+import lombok.val;
+import org.flywaydb.core.Flyway;
 
 public class App {
 
   public static void main(String[] args) throws IOException {
-    new SparkJooqStartupRunner().run();
+    val injector =
+        Guice.createInjector(new DefaultModule(), new SparkApiModule(), new JooqDatabaseModule());
+    val apiConfig = injector.getInstance(ApiConfig.class);
+    val flywayProperties = new Properties();
+    flywayProperties.load(App.class.getResourceAsStream("/flyway.properties"));
+    Flyway.configure().configuration(flywayProperties).load().migrate();
+    apiConfig.establishApi();
+    awaitInitialization();
   }
 }
