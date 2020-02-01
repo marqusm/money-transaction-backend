@@ -1,13 +1,15 @@
-package com.marqusm.example.moneytransaction;
+package com.marqusm.example.moneytransaction.spark.controller;
 
 import static io.restassured.RestAssured.given;
-import static spark.Spark.*;
 
-import com.google.inject.Guice;
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
+import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.common.model.dto.Account;
 import com.marqusm.example.moneytransaction.common.model.dto.Transaction;
-import com.marqusm.example.moneytransaction.spark.configuration.ApiConfig;
+import com.marqusm.example.moneytransaction.configuration.TransactionConcurrencyModule;
 import com.marqusm.example.moneytransaction.spark.configuration.SparkJooqModule;
+import com.marqusm.example.moneytransaction.spark.controller.base.ControllerITest;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,29 +20,44 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author : Marko
  * @createdOn : 29-Jan-20
  */
 @Slf4j
-public class PerformanceTest {
+class TransactionControllerCTest extends ControllerITest {
 
-  private static final String URL_PREFIX = "http://localhost:4567/api/v1";
+  private static final int THREAD_COUNT = 2;
+  private static final int TRANSACTIONS_COUNT = 5;
 
-  public static void main(String[] args) {
-    AtomicInteger REQUESTS_COUNT = new AtomicInteger(10);
-    val THREAD_COUNT = 2;
+  @Disabled
+  @Test
+  void createSlowTransactions() {
+    val totalTime =
+        createTransactions(
+            Modules.override(new SparkJooqModule()).with(new TransactionConcurrencyModule()));
+    log.info("Total time: " + totalTime);
+    Assertions.assertTrue(totalTime > 2400);
+  }
 
-    val injector = Guice.createInjector(new SparkJooqModule());
-    val apiConfig = injector.getInstance(ApiConfig.class);
-    apiConfig.establishApi();
-    awaitInitialization();
+  @Test
+  void createNormalTransactions() {
+    val totalTime = createTransactions(new SparkJooqModule());
+    log.info("Total time: " + totalTime);
+    Assertions.assertTrue(totalTime < 1000);
+  }
+
+  private long createTransactions(Module module) {
+    createInjectorAndInitServer(module);
 
     val accountA =
         given()
             .contentType(ContentType.JSON)
-            .body("{}")
+            .body(new Account(null, BigDecimal.valueOf(1_000)))
             .post(TestData.API_PREFIX + "/accounts")
             .andReturn()
             .as(Account.class);
@@ -52,10 +69,9 @@ public class PerformanceTest {
             .andReturn()
             .as(Account.class);
 
-    val startTime = LocalDateTime.now();
-    val remainingCount = new AtomicInteger(REQUESTS_COUNT.get());
+    val remainingCount = new AtomicInteger(TRANSACTIONS_COUNT);
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
-    for (int i = 0; i < THREAD_COUNT; i++) {
+    for (int i = 0; i < 3; i++) {
       executor.execute(
           () -> {
             while (remainingCount.get() > 0) {
@@ -70,9 +86,11 @@ public class PerformanceTest {
             }
           });
     }
+
+    val startTime = LocalDateTime.now();
     executor.shutdown();
     try {
-      if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+      if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
         executor.shutdownNow();
       }
     } catch (InterruptedException ex) {
@@ -80,14 +98,13 @@ public class PerformanceTest {
       executor.shutdownNow();
       Thread.currentThread().interrupt();
     }
+
     val totalTime =
         LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()
             - startTime.toInstant(ZoneOffset.UTC).toEpochMilli();
-    stop();
-    awaitStop();
-    log.info(
-        "Requests ratio: "
-            + ((double) REQUESTS_COUNT.get() / ((double) totalTime / 1000))
-            + " req/s");
+
+    stopServer();
+
+    return totalTime;
   }
 }

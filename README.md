@@ -76,3 +76,17 @@ My stand here is to keep classes separated and small.
 If it happens that class grows up or that we need another implementation, I am creating an interface immediately (it's easy with today's IDEs).
 Until then, I am keeping class as it is.
 In this code sample, you can see interface defined for JSON (de)serialization, since I have an idea to replace it with Jackson and measure performance.
+
+## Commands
+Start database
+
+`docker-compose up`
+
+Run Flyway initial migration
+
+`gradlew flywayMigrate`
+
+Generate JOOQ models
+
+```gradlew generateSqlJooqSchemaSource```
+

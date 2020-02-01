@@ -3,8 +3,8 @@ package com.marqusm.example.moneytransaction.configuration;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
-import com.marqusm.example.moneytransaction.service.SlowTransactionService;
-import com.marqusm.example.moneytransaction.service.TransactionService;
+import com.marqusm.example.moneytransaction.spark.service.SlowTransactionService;
+import com.marqusm.example.moneytransaction.spark.service.TransactionService;
 
 /**
  * @author : Marko

@@ -1,0 +1,6 @@
+money-transaction-backend:
+  application-mode: SPARK_JOOQ
+  database:
+    url: jdbc:postgresql://localhost:5435/money-transactions
+    user: postgres
+    password: postgres

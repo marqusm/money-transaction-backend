@@ -1,6 +1,6 @@
 package com.marqusm.example.moneytransaction;
 
-import com.marqusm.example.moneytransaction.constant.ApiPath;
+import com.marqusm.example.moneytransaction.common.constant.ApiPath;
 
 /**
  * @author : Marko
