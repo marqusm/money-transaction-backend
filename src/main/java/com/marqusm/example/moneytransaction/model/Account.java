@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.With;
 
 /**
  * @author : Marko
@@ -13,6 +14,7 @@ import lombok.EqualsAndHashCode;
  */
 @AllArgsConstructor
 @Data
+@With
 @EqualsAndHashCode(callSuper = false)
 public class Account extends AbstractModel {
   private final UUID id;

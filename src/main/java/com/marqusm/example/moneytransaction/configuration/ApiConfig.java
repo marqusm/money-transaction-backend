@@ -10,7 +10,10 @@ import com.marqusm.example.moneytransaction.constant.ContentTypeName;
 import com.marqusm.example.moneytransaction.constant.HttpHeaderName;
 import com.marqusm.example.moneytransaction.controller.AccountController;
 import com.marqusm.example.moneytransaction.controller.TransactionController;
-import com.marqusm.example.moneytransaction.exception.base.ClientHttpException;
+import com.marqusm.example.moneytransaction.exception.BadRequestException;
+import com.marqusm.example.moneytransaction.exception.ConflictException;
+import com.marqusm.example.moneytransaction.exception.NotAcceptableException;
+import com.marqusm.example.moneytransaction.exception.NotFoundException;
 import com.marqusm.example.moneytransaction.filter.ContentTypeFilter;
 import com.marqusm.example.moneytransaction.model.ErrorResponse;
 import com.marqusm.example.moneytransaction.util.HttpRequestUtils;
@@ -52,10 +55,34 @@ public class ApiConfig {
           afterAfter(
               "/*", (request, response) -> log.info(HttpRequestUtils.toPrettyString(response)));
           exception(
-              ClientHttpException.class,
+              BadRequestException.class,
               (exception, request, response) -> {
                 log.error(HttpRequestUtils.toPrettyExceptionString(request, response), exception);
-                response.status(exception.getStatusCode());
+                response.status(400);
+                response.type(ContentTypeName.APPLICATION_JSON);
+                response.body(gson.toJson(new ErrorResponse(exception.getMessage())));
+              });
+          exception(
+              ConflictException.class,
+              (exception, request, response) -> {
+                log.error(HttpRequestUtils.toPrettyExceptionString(request, response), exception);
+                response.status(409);
+                response.type(ContentTypeName.APPLICATION_JSON);
+                response.body(gson.toJson(new ErrorResponse(exception.getMessage())));
+              });
+          exception(
+              NotAcceptableException.class,
+              (exception, request, response) -> {
+                log.error(HttpRequestUtils.toPrettyExceptionString(request, response), exception);
+                response.status(406);
+                response.type(ContentTypeName.APPLICATION_JSON);
+                response.body(gson.toJson(new ErrorResponse(exception.getMessage())));
+              });
+          exception(
+              NotFoundException.class,
+              (exception, request, response) -> {
+                log.error(HttpRequestUtils.toPrettyExceptionString(request, response), exception);
+                response.status(404);
                 response.type(ContentTypeName.APPLICATION_JSON);
                 response.body(gson.toJson(new ErrorResponse(exception.getMessage())));
               });

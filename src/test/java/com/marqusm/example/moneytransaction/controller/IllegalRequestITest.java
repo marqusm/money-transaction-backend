@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * @author : Marko
  * @createdOn : 28-Jan-20
  */
-public class IllegalRequestControllerITest extends ControllerITest {
+public class IllegalRequestITest extends ControllerITest {
   @BeforeAll
   static void setUp() {
     createInjectorAndInitServer();

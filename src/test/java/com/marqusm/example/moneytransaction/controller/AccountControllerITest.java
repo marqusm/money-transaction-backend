@@ -6,11 +6,13 @@ import static org.hamcrest.Matchers.*;
 import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
 import com.marqusm.example.moneytransaction.model.Account;
+import com.marqusm.example.moneytransaction.repository.AccountRepository;
 import io.restassured.http.ContentType;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,9 +23,12 @@ import org.junit.jupiter.api.Test;
 @Slf4j
 class AccountControllerITest extends ControllerITest {
 
+  private static AccountRepository accountRepository;
+
   @BeforeAll
   static void setUp() {
-    createInjectorAndInitServer();
+    val injector = createInjectorAndInitServer();
+    accountRepository = injector.getInstance(AccountRepository.class);
   }
 
   @AfterAll
@@ -33,15 +38,21 @@ class AccountControllerITest extends ControllerITest {
 
   @Test
   void create() {
-    given()
-        .contentType(ContentType.JSON.toString())
-        .body(new Account(null, null))
-        .post(TestData.API_PREFIX + "/accounts")
-        .andReturn()
-        .peek()
-        .then()
-        .statusCode(200)
-        .body("id", notNullValue(), "amount", equalTo(0f));
+    val account =
+        given()
+            .contentType(ContentType.JSON.toString())
+            .body(new Account(null, null))
+            .post(TestData.API_PREFIX + "/accounts")
+            .andReturn()
+            .peek()
+            .then()
+            .statusCode(200)
+            .body("id", notNullValue(), "amount", equalTo(0f))
+            .extract()
+            .body()
+            .as(Account.class);
+
+    Assertions.assertNotNull(accountRepository.getById(account.getId()));
   }
 
   @Test
@@ -107,5 +118,7 @@ class AccountControllerITest extends ControllerITest {
         .then()
         .statusCode(404)
         .body("message", containsString("not found"));
+
+    Assertions.assertNotNull(accountRepository.getById(accountId));
   }
 }

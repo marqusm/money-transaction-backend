@@ -1,13 +1,11 @@
 package com.marqusm.example.moneytransaction.exception;
 
-import com.marqusm.example.moneytransaction.exception.base.ClientHttpException;
-
 /**
  * @author : Marko
  * @createdOn : 28-Jan-20
  */
-public class ConflictException extends ClientHttpException {
+public class ConflictException extends RuntimeException {
   public ConflictException(String message) {
-    super(409, message, null);
+    super(message, null);
   }
 }

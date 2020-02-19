@@ -7,12 +7,14 @@ import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
 import com.marqusm.example.moneytransaction.model.Account;
 import com.marqusm.example.moneytransaction.model.Transaction;
+import com.marqusm.example.moneytransaction.repository.TransactionRepository;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -23,9 +25,12 @@ import org.junit.jupiter.api.Test;
 @Slf4j
 class TransactionControllerITest extends ControllerITest {
 
+  private static TransactionRepository transactionRepository;
+
   @BeforeAll
   static void setUp() {
-    createInjectorAndInitServer();
+    val injector = createInjectorAndInitServer();
+    transactionRepository = injector.getInstance(TransactionRepository.class);
   }
 
   @AfterAll
@@ -53,14 +58,20 @@ class TransactionControllerITest extends ControllerITest {
             .andReturn()
             .as(Account.class);
 
-    given()
-        .contentType(ContentType.JSON.toString())
-        .body(new Transaction(null, null, accountB.getId(), BigDecimal.valueOf(-transactionAmount)))
-        .post(TestData.API_PREFIX + "/accounts/" + accountA.getId() + "/transactions")
-        .andReturn()
-        .then()
-        .statusCode(200)
-        .body("id", notNullValue());
+    val transaction =
+        given()
+            .contentType(ContentType.JSON.toString())
+            .body(
+                new Transaction(
+                    null, null, accountB.getId(), BigDecimal.valueOf(-transactionAmount)))
+            .post(TestData.API_PREFIX + "/accounts/" + accountA.getId() + "/transactions")
+            .andReturn()
+            .then()
+            .statusCode(200)
+            .body("id", notNullValue())
+            .extract()
+            .body()
+            .as(Transaction.class);
 
     given()
         .get(TestData.API_PREFIX + "/accounts/" + accountB.getId())
@@ -75,6 +86,8 @@ class TransactionControllerITest extends ControllerITest {
         .then()
         .statusCode(200)
         .body("amount", equalTo(accountA.getAmount().floatValue() - transactionAmount));
+
+    Assertions.assertNotNull(transactionRepository.getById(transaction.getId()));
   }
 
   @Test
