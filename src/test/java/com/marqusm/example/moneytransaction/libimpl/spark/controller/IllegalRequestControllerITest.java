@@ -1,11 +1,11 @@
-package com.marqusm.example.moneytransaction.controller;
+package com.marqusm.example.moneytransaction.libimpl.spark.controller;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
 
 import com.marqusm.example.moneytransaction.TestData;
-import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
+import com.marqusm.example.moneytransaction.libimpl.spark.controller.base.ControllerITest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,6 +33,7 @@ public class IllegalRequestControllerITest extends ControllerITest {
         .body("Test body content")
         .post(TestData.API_PREFIX + "/accounts")
         .andReturn()
+        .prettyPeek()
         .then()
         .statusCode(406)
         .body("message", not(emptyString()));
@@ -45,6 +46,7 @@ public class IllegalRequestControllerITest extends ControllerITest {
         .body("{")
         .post(TestData.API_PREFIX + "/accounts")
         .andReturn()
+        .prettyPeek()
         .then()
         .statusCode(400)
         .body("message", not(emptyString()));

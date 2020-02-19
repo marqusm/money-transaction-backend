@@ -1,12 +1,13 @@
-package com.marqusm.example.moneytransaction.controller;
+package com.marqusm.example.moneytransaction.libimpl.spark.controller;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.common.model.dto.Account;
-import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
+import com.marqusm.example.moneytransaction.libimpl.spark.controller.base.ControllerITest;
 import io.restassured.http.ContentType;
+import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -35,7 +36,7 @@ class AccountControllerITest extends ControllerITest {
   void create() {
     given()
         .contentType(ContentType.JSON.toString())
-        .body(new Account(null, null))
+        .body(new Account(null, BigDecimal.ZERO))
         .post(TestData.API_PREFIX + "/accounts")
         .andReturn()
         .peek()
@@ -49,6 +50,7 @@ class AccountControllerITest extends ControllerITest {
     given()
         .get(TestData.API_PREFIX + "/accounts/" + UUID.randomUUID())
         .andReturn()
+        .prettyPeek()
         .then()
         .statusCode(404)
         .body("message", not(emptyString()));
@@ -59,7 +61,7 @@ class AccountControllerITest extends ControllerITest {
     val accountId =
         given()
             .contentType(ContentType.JSON.toString())
-            .body(new Account(null, null))
+            .body(new Account(null, BigDecimal.ZERO))
             .post(TestData.API_PREFIX + "/accounts")
             .andReturn()
             .as(Account.class)
@@ -79,7 +81,7 @@ class AccountControllerITest extends ControllerITest {
     val accountId =
         given()
             .contentType(ContentType.JSON.toString())
-            .body(new Account(null, null))
+            .body(new Account(null, BigDecimal.ZERO))
             .post(TestData.API_PREFIX + "/accounts")
             .andReturn()
             .as(Account.class)
@@ -98,7 +100,7 @@ class AccountControllerITest extends ControllerITest {
         .andReturn()
         .then()
         .statusCode(200)
-        .body(equalTo("null"));
+        .body(anyOf(equalTo("null"), emptyString()));
 
     given()
         .body(new Account(null, null))

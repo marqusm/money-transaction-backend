@@ -6,5 +6,6 @@ package com.marqusm.example.moneytransaction.common.constant;
  */
 public enum RepositoryImplementation {
   IN_MEMORY,
-  JOOQ
+  JOOQ,
+  VERTX_PG
 }

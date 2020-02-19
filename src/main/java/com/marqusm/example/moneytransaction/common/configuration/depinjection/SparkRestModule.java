@@ -5,10 +5,13 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.marqusm.example.moneytransaction.common.rest.RestStarter;
 import com.marqusm.example.moneytransaction.common.service.AccountService;
 import com.marqusm.example.moneytransaction.common.service.TransactionService;
-import com.marqusm.example.moneytransaction.controller.SparkAccountController;
-import com.marqusm.example.moneytransaction.controller.SparkTransactionController;
+import com.marqusm.example.moneytransaction.libimpl.spark.controller.SparkAccountController;
+import com.marqusm.example.moneytransaction.libimpl.spark.controller.SparkTransactionController;
+import com.marqusm.example.moneytransaction.libimpl.spark.filter.ContentTypeFilter;
+import com.marqusm.example.moneytransaction.libimpl.spark.rest.SparkRestStarter;
 import com.marqusm.example.moneytransaction.libimpl.spark.transformer.JsonGsonTransformer;
 import lombok.NoArgsConstructor;
 import spark.ResponseTransformer;
@@ -18,9 +21,24 @@ import spark.ResponseTransformer;
  * @createdOn : 01-Feb-20
  */
 @NoArgsConstructor
-public class SparkApiModule implements Module {
+public class SparkRestModule implements Module {
   @Override
   public void configure(Binder binder) {}
+
+  @Provides
+  @Singleton
+  RestStarter provideApiConfig(
+      SparkAccountController accountController,
+      SparkTransactionController sparkTransactionController,
+      ResponseTransformer responseTransformer,
+      Gson gson) {
+    return new SparkRestStarter(
+        accountController,
+        sparkTransactionController,
+        responseTransformer,
+        gson,
+        new ContentTypeFilter());
+  }
 
   @Provides
   @Singleton

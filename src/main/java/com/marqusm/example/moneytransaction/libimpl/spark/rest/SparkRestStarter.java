@@ -1,21 +1,21 @@
-package com.marqusm.example.moneytransaction.libimpl.spark.configuration;
+package com.marqusm.example.moneytransaction.libimpl.spark.rest;
 
 import static spark.Spark.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.inject.Inject;
 import com.marqusm.example.moneytransaction.common.constant.ApiPath;
 import com.marqusm.example.moneytransaction.common.constant.ContentTypeName;
 import com.marqusm.example.moneytransaction.common.constant.HttpHeaderName;
 import com.marqusm.example.moneytransaction.common.exception.base.ClientHttpException;
 import com.marqusm.example.moneytransaction.common.model.dto.ErrorResponse;
-import com.marqusm.example.moneytransaction.controller.SparkAccountController;
-import com.marqusm.example.moneytransaction.controller.SparkTransactionController;
+import com.marqusm.example.moneytransaction.common.rest.RestStarter;
+import com.marqusm.example.moneytransaction.libimpl.spark.controller.SparkAccountController;
+import com.marqusm.example.moneytransaction.libimpl.spark.controller.SparkTransactionController;
 import com.marqusm.example.moneytransaction.libimpl.spark.filter.ContentTypeFilter;
 import com.marqusm.example.moneytransaction.libimpl.spark.util.HttpRequestUtils;
 import java.util.NoSuchElementException;
-import lombok.AccessLevel;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -23,11 +23,11 @@ import spark.ResponseTransformer;
 
 /**
  * @author : Marko
- * @createdOn : 25-Jan-20
+ * @createdOn : 04-Feb-20
  */
 @Slf4j
-@AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
-public class ApiConfig {
+@AllArgsConstructor
+public class SparkRestStarter implements RestStarter {
 
   private final SparkAccountController accountController;
   private final SparkTransactionController transactionController;
@@ -35,16 +35,15 @@ public class ApiConfig {
   private final Gson gson;
   private final ContentTypeFilter contentTypeFilter;
 
-  private static int requestId = 1;
-
-  public void establishApi() {
+  @Override
+  public void startRest() {
     path(
         ApiPath.API_PREFIX,
         () -> {
           before(
               "/*",
               (request, response) -> {
-                val currRequestId = requestId++ + "";
+                val currRequestId = UUID.randomUUID().toString();
                 log.info(HttpRequestUtils.toPrettyString(request, currRequestId));
                 response.header(HttpHeaderName.X_Request_ID, currRequestId);
                 contentTypeFilter.apply(request);
@@ -111,5 +110,13 @@ public class ApiConfig {
               ApiPath.TRANSACTIONS,
               () -> get("/:transactionId", transactionController.readById(), responseTransformer));
         });
+
+    awaitInitialization();
+  }
+
+  @Override
+  public void stopRest() {
+    stop();
+    awaitStop();
   }
 }

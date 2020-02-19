@@ -1,7 +1,9 @@
 moneyTransactionService:
 #  repositoryImplementation: IN_MEMORY
-  repositoryImplementation: JOOQ
-  restImplementation: SPARK
+#  repositoryImplementation: JOOQ
+  repositoryImplementation: VERTX_PG
+#  restImplementation: SPARK
+  restImplementation: VERTX
   database:
     url: jdbc:postgresql://localhost:5435/money-transactions
     user: postgres

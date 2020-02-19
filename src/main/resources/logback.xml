@@ -13,11 +13,11 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <encoder>
-<!--            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>-->
+            <!--            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>-->
             <pattern>%d{HH:mm:ss.SSS} %-5p [%c] - %m%n</pattern>
         </encoder>
     </appender>
-    <!--    <logger name="org.hibernate.SQL" level="DEBUG"/>-->
+<!--    <logger name="org.jooq" level="DEBUG"/>-->
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>

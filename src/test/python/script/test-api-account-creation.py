@@ -3,8 +3,8 @@ import threading
 import time
 
 URL_PREFIX = "http://localhost:4567/api/v1"
-REQUESTS_COUNT = 100
-THREADS_COUNT = 100
+REQUESTS_COUNT = 200
+THREADS_COUNT = 20
 
 
 class MyThread(threading.Thread):

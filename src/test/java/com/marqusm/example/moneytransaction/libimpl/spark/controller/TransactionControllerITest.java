@@ -1,4 +1,4 @@
-package com.marqusm.example.moneytransaction.controller;
+package com.marqusm.example.moneytransaction.libimpl.spark.controller;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.*;
 import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.common.model.dto.Account;
 import com.marqusm.example.moneytransaction.common.model.dto.Transaction;
-import com.marqusm.example.moneytransaction.controller.base.ControllerITest;
+import com.marqusm.example.moneytransaction.libimpl.spark.controller.base.ControllerITest;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import java.util.UUID;

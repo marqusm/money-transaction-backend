@@ -5,5 +5,6 @@ package com.marqusm.example.moneytransaction.common.constant;
  * @createdOn : 01-Feb-20
  */
 public enum RestImplementation {
-  SPARK
+  SPARK,
+  VERTX
 }

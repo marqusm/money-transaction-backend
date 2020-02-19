@@ -1,12 +1,10 @@
-package com.marqusm.example.moneytransaction.controller.base;
-
-import static spark.Spark.*;
+package com.marqusm.example.moneytransaction.libimpl.spark.controller.base;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.marqusm.example.moneytransaction.libimpl.spark.StartupRunner;
-import com.marqusm.example.moneytransaction.libimpl.spark.configuration.ApiConfig;
+import com.marqusm.example.moneytransaction.common.rest.RestStarter;
+import com.marqusm.example.moneytransaction.common.util.StartupRunner;
 import lombok.val;
 
 /**
@@ -14,12 +12,12 @@ import lombok.val;
  * @createdOn : 28-Jan-20
  */
 public abstract class ControllerITest {
+  private static RestStarter restStarter;
 
   public static Injector createInjectorAndInitServer(Module module) {
     val injector = Guice.createInjector(module);
-    val apiConfig = injector.getInstance(ApiConfig.class);
-    apiConfig.establishApi();
-    awaitInitialization();
+    restStarter = injector.getInstance(RestStarter.class);
+    restStarter.startRest();
     return injector;
   }
 
@@ -28,7 +26,6 @@ public abstract class ControllerITest {
   }
 
   public static void stopServer() {
-    stop();
-    awaitStop();
+    restStarter.stopRest();
   }
 }

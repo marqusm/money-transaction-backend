@@ -1,13 +1,12 @@
 package com.marqusm.example.moneytransaction;
 
 import static io.restassured.RestAssured.given;
-import static spark.Spark.*;
 
 import com.google.inject.Guice;
 import com.marqusm.example.moneytransaction.common.configuration.depinjection.DefaultModule;
 import com.marqusm.example.moneytransaction.common.model.dto.Account;
 import com.marqusm.example.moneytransaction.common.model.dto.Transaction;
-import com.marqusm.example.moneytransaction.libimpl.spark.configuration.ApiConfig;
+import com.marqusm.example.moneytransaction.common.rest.RestStarter;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,9 +32,8 @@ public class PerformanceTest {
     val THREAD_COUNT = 2;
 
     val injector = Guice.createInjector(new DefaultModule());
-    val apiConfig = injector.getInstance(ApiConfig.class);
-    apiConfig.establishApi();
-    awaitInitialization();
+    val restStarter = injector.getInstance(RestStarter.class);
+    restStarter.startRest();
 
     val accountA =
         given()
@@ -83,8 +81,9 @@ public class PerformanceTest {
     val totalTime =
         LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()
             - startTime.toInstant(ZoneOffset.UTC).toEpochMilli();
-    stop();
-    awaitStop();
+
+    restStarter.stopRest();
+
     log.info(
         "Requests ratio: "
             + ((double) REQUESTS_COUNT.get() / ((double) totalTime / 1000))

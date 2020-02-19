@@ -1,14 +1,18 @@
 package com.marqusm.example.moneytransaction.common.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.*;
 
 /**
  * @author : Marko
  * @createdOn : 26-Jan-20
  */
+@NoArgsConstructor
 @AllArgsConstructor
-@Value
+@Data
 public class ErrorResponse {
   private String message;
+
+  public ErrorResponse(Throwable cause) {
+    this.message = cause.getMessage();
+  }
 }
