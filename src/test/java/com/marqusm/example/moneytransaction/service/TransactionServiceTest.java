@@ -7,7 +7,6 @@ import com.marqusm.example.moneytransaction.TestData;
 import com.marqusm.example.moneytransaction.model.Transaction;
 import com.marqusm.example.moneytransaction.repository.AccountRepository;
 import com.marqusm.example.moneytransaction.repository.TransactionRepository;
-import java.util.UUID;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -37,8 +36,8 @@ class TransactionServiceTest {
 
   @Test
   void createTransaction() {
-    val testAccount1 = TestData.createAccount().withId(UUID.randomUUID());
-    val testAccount2 = TestData.createAccount().withId(UUID.randomUUID());
+    val testAccount1 = TestData.createAccount();
+    val testAccount2 = TestData.createAccount();
     val testTransaction =
         TestData.createTransaction()
             .withAccountId(testAccount1.getId())
