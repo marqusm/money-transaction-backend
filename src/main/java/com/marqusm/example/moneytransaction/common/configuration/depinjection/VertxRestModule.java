@@ -41,4 +41,10 @@ public class VertxRestModule implements Module {
   RoutingContextUtil provideRoutingContextUtil(Gson gson) {
     return new RoutingContextUtil(gson);
   }
+
+  @Provides
+  @Singleton
+  Validator provideValidator(Gson gson, RoutingContextUtil routingContextUtil) {
+    return new Validator(gson, routingContextUtil);
+  }
 }

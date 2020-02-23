@@ -4,6 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.marqusm.example.moneytransaction.common.configuration.AppConfig;
 import com.marqusm.example.moneytransaction.common.model.dto.Account;
 import com.marqusm.example.moneytransaction.common.model.dto.Transaction;
 import com.marqusm.example.moneytransaction.common.model.dto.TransactionCollection;
@@ -16,6 +17,7 @@ import io.vertx.sqlclient.PoolOptions;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.conf.Settings;
@@ -86,18 +88,20 @@ public class VertxPgDatabaseModule implements Module {
   @Provides
   @Singleton
   PgConnectOptions providePgConnectOptions() {
+    val databaseConfig = AppConfig.getLocalConfig().getMoneyTransactionService().getDatabase();
     return new PgConnectOptions()
-        .setPort(5435)
-        .setHost("localhost")
-        .setDatabase("money-transactions")
-        .setUser("postgres")
-        .setPassword("postgres");
+        .setHost(databaseConfig.getHost())
+        .setPort(databaseConfig.getPort())
+        .setDatabase(databaseConfig.getDatabase())
+        .setUser(databaseConfig.getUser())
+        .setPassword(databaseConfig.getPassword());
   }
 
   @Provides
   @Singleton
   PoolOptions providePoolOptions() {
-    return new PoolOptions().setMaxSize(30);
+    val databaseConfig = AppConfig.getLocalConfig().getMoneyTransactionService().getDatabase();
+    return new PoolOptions().setMaxSize(databaseConfig.getMaxConnections());
   }
 
   @Provides

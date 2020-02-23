@@ -24,12 +24,12 @@ public class VertxRestVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> promise) {
-    Promise<HttpServer> future = Promise.promise();
+    Promise<HttpServer> httpServerPromise = Promise.promise();
     vertx
         .createHttpServer()
         .requestHandler(createRouter(vertx))
-        .listen(config().getInteger("http.port", 4567), future);
-    promise
+        .listen(config().getInteger("http.port", 4567), httpServerPromise);
+    httpServerPromise
         .future()
         .onSuccess(
             response -> {

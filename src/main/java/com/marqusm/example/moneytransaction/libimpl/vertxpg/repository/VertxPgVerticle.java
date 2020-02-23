@@ -26,14 +26,20 @@ public class VertxPgVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> promise) {
-    vertx.eventBus().consumer(MessageAddress.CREATE_ACCOUNT.name(), this::onCreateAccountMessage);
-    vertx
-        .eventBus()
-        .consumer(MessageAddress.FIND_ACCOUNT_BY_ID.name(), this::onFindAccountByIdMessage);
-    vertx
-        .eventBus()
-        .consumer(MessageAddress.DELETE_ACCOUNT_BY_ID.name(), this::onDeleteAccountByIdMessage);
-    promise.complete();
+    try {
+      vertx.eventBus().consumer(MessageAddress.CREATE_ACCOUNT.name(), this::onCreateAccountMessage);
+      vertx
+          .eventBus()
+          .consumer(MessageAddress.FIND_ACCOUNT_BY_ID.name(), this::onFindAccountByIdMessage);
+      vertx
+          .eventBus()
+          .consumer(MessageAddress.DELETE_ACCOUNT_BY_ID.name(), this::onDeleteAccountByIdMessage);
+      log.info("VertxPgVerticle started");
+      promise.complete();
+    } catch (Exception e) {
+      log.error("VertxPgVerticle failed", e);
+      promise.fail(e);
+    }
   }
 
   private void onCreateAccountMessage(Message<String> message) {

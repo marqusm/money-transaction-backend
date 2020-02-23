@@ -1,0 +1,13 @@
+moneyTransactionService:
+#  repositoryImplementation: IN_MEMORY
+#  repositoryImplementation: JOOQ
+#  repositoryImplementation: VERTX_PG
+#  restImplementation: SPARK
+#  restImplementation: VERTX
+  database:
+    host: localhost
+    port: 5432
+    database: money-transactions
+    user: postgres
+    password:
+    maxConnections: 50
