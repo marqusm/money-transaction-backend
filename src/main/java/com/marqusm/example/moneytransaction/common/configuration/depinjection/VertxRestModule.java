@@ -11,7 +11,9 @@ import com.marqusm.example.moneytransaction.libimpl.vertx.rest.VertxRestStarter;
 import com.marqusm.example.moneytransaction.libimpl.vertx.util.RoutingContextUtil;
 import com.marqusm.example.moneytransaction.libimpl.vertx.validator.Validator;
 import com.marqusm.example.moneytransaction.libimpl.vertxpg.repository.VertxAccountRepository;
+import io.vertx.pgclient.PgPool;
 import lombok.NoArgsConstructor;
+import org.jooq.DSLContext;
 
 /**
  * @author : Marko
@@ -32,13 +34,23 @@ public class VertxRestModule implements Module {
   @Provides
   @Singleton
   AccountController provideAccountController(
-      RoutingContextUtil routingContextUtil, Validator validator) {
-    return new AccountController(routingContextUtil, validator);
+      Gson gson,
+      PgPool pgPool,
+      DSLContext dslContext,
+      RoutingContextUtil routingContextUtil,
+      Validator validator) {
+    return new AccountController(gson, pgPool, dslContext, routingContextUtil, validator);
   }
 
   @Provides
   @Singleton
   RoutingContextUtil provideRoutingContextUtil(Gson gson) {
     return new RoutingContextUtil(gson);
+  }
+
+  @Provides
+  @Singleton
+  Validator provideValidator(Gson gson, RoutingContextUtil routingContextUtil) {
+    return new Validator(gson, routingContextUtil);
   }
 }

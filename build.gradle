@@ -65,42 +65,42 @@ dependencies {
     testImplementation 'com.sparkjava:spark-core:2.9.1'
 }
 
-jooq {
-    sql(sourceSets.main) {
-        jdbc {
-            driver = 'org.postgresql.Driver'
-            url = 'jdbc:postgresql://localhost:5435/money-transactions'
-            user = 'postgres'
-            password = 'postgres'
-        }
-        generator {
-            name = 'org.jooq.codegen.DefaultGenerator'
-            database {
-                name = 'org.jooq.meta.postgres.PostgresDatabase'
-                includes = '.*'
-                excludes = ''
-                inputSchema = 'public'
-                includeRoutines = false
-            }
-            target {
-                packageName = 'com.marqusm.example.moneytransaction.common.model.generated.jooq'
-                directory = 'src/main/java'
-            }
-        }
-    }
-}
+//jooq {
+//    sql(sourceSets.main) {
+//        jdbc {
+//            driver = 'org.postgresql.Driver'
+//            url = 'jdbc:postgresql://localhost:5433/money-transactions'
+//            user = 'postgres'
+//            password = 'postgres'
+//        }
+//        generator {
+//            name = 'org.jooq.codegen.DefaultGenerator'
+//            database {
+//                name = 'org.jooq.meta.postgres.PostgresDatabase'
+//                includes = '.*'
+//                excludes = ''
+//                inputSchema = 'public'
+//                includeRoutines = false
+//            }
+//            target {
+//                packageName = 'com.marqusm.example.moneytransaction.common.model.generated.jooq'
+//                directory = 'src/main/java'
+//            }
+//        }
+//    }
+//}
 
-tasks.generateSqlJooqSchemaSource.with {
-    def out = new ByteArrayOutputStream()
-    javaExecSpec = { JavaExecSpec s ->
-        s.standardOutput = out
-        s.errorOutput = out
-        s.ignoreExitValue = true
-        s.jvmArgs '-Xmx512M'
-    }
-    execResultHandler = { ExecResult r ->
-        if (r.exitValue != 0) {
-            throw new RuntimeException('jOOQ source code generation failed:\n\n' + out.toString())
-        }
-    }
-}
+//tasks.generateSqlJooqSchemaSource.with {
+//    def out = new ByteArrayOutputStream()
+//    javaExecSpec = { JavaExecSpec s ->
+//        s.standardOutput = out
+//        s.errorOutput = out
+//        s.ignoreExitValue = true
+//        s.jvmArgs '-Xmx512M'
+//    }
+//    execResultHandler = { ExecResult r ->
+//        if (r.exitValue != 0) {
+//            throw new RuntimeException('jOOQ source code generation failed:\n\n' + out.toString())
+//        }
+//    }
+//}

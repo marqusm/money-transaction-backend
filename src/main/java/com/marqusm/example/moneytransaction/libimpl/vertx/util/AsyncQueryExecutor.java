@@ -23,6 +23,7 @@ public class AsyncQueryExecutor<R> {
 
   public void run(String query, Function<RowSet<Row>, R> processResponse) {
     final Promise<SqlConnection> connPromise = Promise.promise();
+
     pgPool.getConnection(connPromise);
     connPromise
         .future()

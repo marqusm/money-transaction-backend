@@ -24,12 +24,12 @@ public class VertxRestVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> promise) {
-    Promise<HttpServer> future = Promise.promise();
+    Promise<HttpServer> httpServerPromise = Promise.promise();
     vertx
         .createHttpServer()
         .requestHandler(createRouter(vertx))
-        .listen(config().getInteger("http.port", 4567), future);
-    promise
+        .listen(config().getInteger("http.port", 4567), httpServerPromise);
+    httpServerPromise
         .future()
         .onSuccess(
             response -> {
@@ -45,16 +45,18 @@ public class VertxRestVerticle extends AbstractVerticle {
 
   private Router createRouter(Vertx vertx) {
     val router = Router.router(vertx);
+    val findAccountByIdHandler = accountController.findAccountByIdHandler(vertx);
     router.route(ApiPath.API_PREFIX + "/*").handler(BodyHandler.create());
     router
         .post(ApiPath.API_PREFIX + ApiPath.ACCOUNTS)
         .handler(accountController.createAccountHandler(vertx));
     router
         .get(ApiPath.API_PREFIX + ApiPath.ACCOUNTS + "/:accountId")
-        .handler(accountController.findAccountByIdHandler(vertx));
+        .handler(findAccountByIdHandler);
     router
         .delete(ApiPath.API_PREFIX + ApiPath.ACCOUNTS + "/:accountId")
         .handler(accountController.deleteAccountByIdHandler(vertx));
+    log.info("Router created");
     return router;
   }
 }

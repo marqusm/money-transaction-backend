@@ -2,7 +2,7 @@ package com.marqusm.example.moneytransaction.common.util;
 
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
-import com.marqusm.example.moneytransaction.common.configuration.ApplicationConfiguration;
+import com.marqusm.example.moneytransaction.common.configuration.AppConfig;
 import com.marqusm.example.moneytransaction.common.configuration.depinjection.*;
 import com.marqusm.example.moneytransaction.common.constant.RepositoryImplementation;
 import com.marqusm.example.moneytransaction.common.constant.RestImplementation;
@@ -17,8 +17,8 @@ public class StartupRunner {
   public static Module generateModule() {
     return Modules.combine(
         new DefaultModule(),
-        getModule(ApplicationConfiguration.getRepositoryImplementation()),
-        getModule(ApplicationConfiguration.getRestImplementation()));
+        getModule(AppConfig.getRepositoryImplementation()),
+        getModule(AppConfig.getRestImplementation()));
   }
 
   private static Module getModule(RestImplementation restImplementation) {

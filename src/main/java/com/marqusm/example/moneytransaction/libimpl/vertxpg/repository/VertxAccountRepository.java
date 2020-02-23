@@ -2,10 +2,12 @@ package com.marqusm.example.moneytransaction.libimpl.vertxpg.repository;
 
 import static com.marqusm.example.moneytransaction.common.model.generated.jooq.Tables.ACCOUNT;
 
+import com.marqusm.example.moneytransaction.common.constant.SqlQuery;
 import com.marqusm.example.moneytransaction.common.model.dto.Account;
 import com.marqusm.example.moneytransaction.libimpl.vertx.util.AsyncQueryExecutor;
 import io.vertx.core.Promise;
 import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.Tuple;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -29,18 +31,18 @@ public class VertxAccountRepository {
     val queryExecutor = new AsyncQueryExecutor<Account>(pgPool, promise);
     val timestamp = Timestamp.from(OffsetDateTime.now().toInstant());
     queryExecutor.run(
-        create
-            .insertInto(
-                ACCOUNT,
-                ACCOUNT.BALANCE,
-                ACCOUNT.META_ACTIVE,
-                ACCOUNT.META_CREATION_DATE,
-                ACCOUNT.META_MODIFIED_DATE)
-            .values(account.getBalance(), Boolean.TRUE, timestamp, timestamp)
-            .returning()
-            .getSQL(),
-        //        SqlQuery.CREATE_ACCOUNT,
-        //        Tuple.of(account.getBalance(), true, timestamp, timestamp),
+        //        create
+        //            .insertInto(
+        //                ACCOUNT,
+        //                ACCOUNT.BALANCE,
+        //                ACCOUNT.META_ACTIVE,
+        //                ACCOUNT.META_CREATION_DATE,
+        //                ACCOUNT.META_MODIFIED_DATE)
+        //            .values(account.getBalance(), Boolean.TRUE, timestamp, timestamp)
+        //            .returning()
+        //            .getSQL(),
+        SqlQuery.CREATE_ACCOUNT,
+        Tuple.of(account.getBalance(), true, timestamp, timestamp),
         rowSet -> {
           val row = rowSet.iterator().next();
           return new Account(
