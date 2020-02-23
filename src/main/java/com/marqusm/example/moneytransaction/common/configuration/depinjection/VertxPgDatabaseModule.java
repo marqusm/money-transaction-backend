@@ -54,8 +54,8 @@ public class VertxPgDatabaseModule implements Module {
 
   @Provides
   @Singleton
-  VertxAccountRepository provideAccountRepository(PgPool client, DSLContext dslContext) {
-    return new VertxAccountRepository(client, dslContext);
+  VertxAccountRepository provideAccountRepository(PgPool pgPool) {
+    return new VertxAccountRepository(pgPool);
   }
 
   //  @Provides
@@ -94,7 +94,8 @@ public class VertxPgDatabaseModule implements Module {
         .setPort(databaseConfig.getPort())
         .setDatabase(databaseConfig.getDatabase())
         .setUser(databaseConfig.getUser())
-        .setPassword(databaseConfig.getPassword());
+        .setPassword(databaseConfig.getPassword())
+        .setCachePreparedStatements(true);
   }
 
   @Provides
