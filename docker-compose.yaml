@@ -7,7 +7,8 @@ services:
     restart: on-failure
     stop_signal: SIGINT
     ports:
-      - 5435:5432
+      - 5432:5432
+    command: postgres -c max_connections=200
     environment:
       - POSTGRES_DB=money-transactions
       - POSTGRES_USER=postgres
